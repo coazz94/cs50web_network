@@ -1,5 +1,38 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <h3>All Posts</h3>
+    {% if user.is_authenticated   %}
+    <div class="container text-center">
+        <div class="row">
+          <div class="col-12">
+            <form action="{% url 'post' %}" method="post">
+            {% csrf_token %}
+                <label rows="1" class="form-label-center mt-4" id="label_post">New Post</label>
+                <div class="mb-1">
+                    <textarea class="form-control-center" name="post" rows="3" style="width: 40%;"></textarea>
+                </div>
+                <button  type="submit" class="btn btn-info mb-3">Post</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% for post in posts %}
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-5 shadow">
+              <div class="modal-header border-bottom-0">
+                <h4 class="modal-title fs-5">{{ post.creator }}</h1>
+              </div>
+              <div class="modal-body py-0">
+                <p>{{ post.content }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn btn-primary w-20 mx-0 mb-2">Edit</button>
+                <button type="button" class="btn btn btn-dark w-20 mx-0 ml-3">Comment</button>
+              </div>
+            </div>
+          </div>
+    {% endfor %}
+
 {% endblock %}

@@ -4,14 +4,23 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import *
 
+# https://cs50.harvard.edu/web/2020/projects/4/network/
 
 def index(request):
-    return render(request, "network/index.html")
+
+    # Get all the posts in of the db
+    posts = Post.objects.all()
+
+    return render(request, "network/index.html", {
+        "posts" : posts, 
+        "user_id" : request.user.id
+    })
 
 
 def login_view(request):
+
     if request.method == "POST":
 
         # Attempt to sign user in
@@ -61,3 +70,31 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+def post(request):
+
+    # get the content from the textarea with the name post    
+    content = request.POST.get("post")
+
+    # Create the user instance
+    user = User.objects.get(id = request.user.id)
+    # Create the post in the db
+    new_post = Post(creator=user, content=content)
+    new_post.save()
+    
+    # redirect in the end to the index page
+    return HttpResponseRedirect(reverse("index"))
+
+
+
+def user_page(request, user_id):
+
+    """Profilepage should display
+        - number of followers
+        - number of user following
+        - posts in reverse order
+        - other users, show follow unfollow button 
+    """
+
+    return render(request, "network/user_page.html")
