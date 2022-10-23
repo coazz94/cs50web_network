@@ -2,8 +2,11 @@
 
 {% block body %}
     <h3>All Posts</h3>
-    {% if user.is_authenticated   %}
-    <div class="container text-center">
+
+
+
+    {% if user.is_authenticated %}
+    <div class="container text-center" id="post_input">
         <div class="row">
           <div class="col-12">
             <form action="{% url 'post' %}" method="post">
@@ -19,20 +22,61 @@
       </div>
     {% endif %}
     {% for post in posts %}
-        <div class="modal-dialog" role="document">
-            <div class="modal-content rounded-5 shadow">
-              <div class="modal-header border-bottom-0">
-                <h4 class="modal-title fs-5">{{ post.creator }}</h1>
+        <div class="modal-dialog" role="document" >
+            <div class="modal-content rounded-5 shadow" >
+
+              <div id="view_{{ post.id }}">
+                <div class="modal-header border-bottom-0">
+                  <div>
+                    <a href="{% url 'user_page' post.creator.id %}">
+                      <h4 class="modal-title fs-5">{{ post.creator }}</h1>
+                    </a>
+                  </div>
+                </div>
+                <div class="modal-body py-0" id="post_{{ post.id }}">
+                  <p>{{ post.content }}</p>
+                </div>
+                <div class="modal-footer" id="buttons_post_{{ post.id }}">
+                  <p id="date_modal">{{ post.date }}</p>
+                  <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
+                  <button type="button" class="btn btn btn-dark">Comment</button>
+                </div>
               </div>
-              <div class="modal-body py-0">
-                <p>{{ post.content }}</p>
+
+              <div class="edit_view" id="edit_view_{{ post.id }}">
+
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn btn-primary w-20 mx-0 mb-2">Edit</button>
-                <button type="button" class="btn btn btn-dark w-20 mx-0 ml-3">Comment</button>
-              </div>
+
+
+
+
             </div>
           </div>
     {% endfor %}
+    <div class="pagination mb-2 ml-2">
+      <span class="step-links">
+          {% if posts.has_previous %}
+            <button class="btn btn-link">
+              <a href="?page=1">&laquo; first</a>
+            </button>
+            <button class="btn btn-link">
+              <a href="?page={{ posts.previous_page_number }}">previous</a>
+            </button>
+          {% endif %}
+            <span class="current border">
+                Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+            </span>
+          {% if posts.has_next %}
+            <button class="btn btn-link">
+              <a href="?page={{ posts.next_page_number }}">next</a>
+            </button>
+            <button class="btn btn-link">
+              <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+            </button>
+          {% endif %}
+      </span>
+  </div>
+
+
 
 {% endblock %}

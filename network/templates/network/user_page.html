@@ -1,5 +1,48 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    Test
+    <section id="content" class="container">
+    <div class="page-heading">
+        <div class="media">
+          <div class="media-left pr30">
+            <a href="#">
+              <img class="media-object mw150" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="...">
+            </a>
+            <div>
+                <h4>Follower: {{ followed }}</h4>
+                <h4>Following: {{ following }}</h4>
+            </div>
+            {% if user_searched.id != user.id %}
+              <form action="{% url 'change_follow' user_searched.id %}" method="post">
+                {% csrf_token %}
+                {% if not follow_state %}
+                  	<button  type="submit" name="action" value="follow" class="btn btn-info mb-3">Follow</button>
+                {% else %}
+                <button  type="submit" name="action" value="unfollow" class="btn btn-danger mb-3">Unfollow</button>
+                {% endif %}
+              </form>
+            {% endif %}
+          </div>                      
+          <div class="media-body va-m">
+            <h2 class="media-heading">{{ user_searched.username }}</h2>
+            <p class="lead">Lorem ipsum dolor sit amet ctetur adicing elit, sed do eiusmod tempor incididunt</p>
+            <div class="media-links">
+                {% for post in posts %}
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content rounded-5 shadow">
+                      <div class="modal-body py-0">
+                        <p>{{ post.content }}</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn btn-primary w-20 mx-0 mb-2">Edit</button>
+                        <button type="button" class="btn btn btn-dark w-20 mx-0 ml-3">Comment</button>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+          </div>
+        </div>
+    </div>
+    </section>
 {% endblock %}

@@ -1,8 +1,12 @@
+from asyncio.streams import FlowControlMixin
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from requests import request
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .models import *
 
@@ -10,8 +14,14 @@ from .models import *
 
 def index(request):
 
-    # Get all the posts in of the db
-    posts = Post.objects.all()
+    # Get all the posts in of the db sort them by date (- is descending)
+    posts = Post.objects.all().order_by("-date")
+
+    # Make the paginator class, set to 3 posts per site
+    p = Paginator(posts, 3)
+    page_number = request.GET.get("page")
+    posts = p.get_page(page_number)
+
 
     return render(request, "network/index.html", {
         "posts" : posts, 
@@ -87,6 +97,34 @@ def post(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def following_page(request):
+
+    # get the users that the logged in user is following
+    following = Follower.objects.filter(follower=request.user.id)
+
+    # create a list and append the following users ids
+    list_following = []
+    for user in following:
+        list_following.append(user.followed.id)
+
+
+    # filter the posts by the user the logged in user is following
+    my_filter_qs = Q()
+    for creator in list_following:
+        my_filter_qs = my_filter_qs | Q(creator=creator)
+    
+
+    # Use the filter and check if the user is following anybody or not
+    if len(list_following) > 0:
+        posts_filtered = Post.objects.filter(my_filter_qs)
+    else:
+        posts_filtered = None
+
+
+    return render(request,"network/following.html", {
+        "posts" : posts_filtered
+    })
+
 
 def user_page(request, user_id):
 
@@ -96,5 +134,72 @@ def user_page(request, user_id):
         - posts in reverse order
         - other users, show follow unfollow button 
     """
+    # get only the posts that the user created
+    user_posts = Post.objects.filter(creator=user_id)
+    user = User.objects.get(id = user_id)
 
-    return render(request, "network/user_page.html")
+    # Get the count of the followers and following of this user
+    following = Follower.objects.filter(follower=user_id).count()
+    followed = Follower.objects.filter(followed=user_id).count()
+
+    # set the followstate as false for the logged in user, change it to true if the logged in user follows this user
+    follow_state = False
+    followers =  Follower.objects.filter(followed = user_id)
+
+    for users in followers:
+        if request.user.id == users.follower.id:
+            follow_state = True
+            break
+
+
+    return render(request, "network/user_page.html", {
+        "posts" : user_posts, 
+        "user_searched" : user, 
+        "following": following, 
+        "followed" : followed,
+        "follow_state" : follow_state
+    })
+
+
+def change_follow(request, user_searched_id):
+
+    # get the 
+    user_searched = User.objects.get(id=user_searched_id)
+
+    # Get the info what button was clicked follow or unfollow
+    if request.POST.get("action") == "follow":
+        # make a instance for the logged in user
+        follower = User.objects.get(id=request.user.id)
+        # Create the enrty in the database
+        new_following = Follower(followed=user_searched, follower=follower)
+        new_following.save()
+
+    else:
+        # Find the query for the users and delete it 
+        following_query = Follower.objects.filter(follower=request.user.id, followed=user_searched)
+        following_query.delete()
+
+    # return to the user Page again
+    return HttpResponseRedirect(reverse("user_page", kwargs={"user_id" : user_searched_id}))
+
+
+def posts(request, post_id):
+
+    # Query for requested post
+    try:
+        # add user maybe TODO
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return post contents
+    if request.method == "GET":
+        post_info = post.serialize()
+        return JsonResponse(post_info)
+
+    # Post must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
