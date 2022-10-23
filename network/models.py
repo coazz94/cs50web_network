@@ -27,6 +27,15 @@ class Post(models.Model):
     def __str__(self):
         return f"User: {self.creator} created a Post on {self.date}"
 
+    # make the serialize function to acess the items values in python 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "content": self.content, 
+            "date" : self.date, 
+            "likes" : self.likes
+        }
+
 
 class Follower(models.Model):
     """Display who is followign whom

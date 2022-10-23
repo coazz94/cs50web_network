@@ -1,7 +1,7 @@
 from asyncio.streams import FlowControlMixin
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from requests import request
@@ -181,3 +181,25 @@ def change_follow(request, user_searched_id):
 
     # return to the user Page again
     return HttpResponseRedirect(reverse("user_page", kwargs={"user_id" : user_searched_id}))
+
+
+def posts(request, post_id):
+
+    # Query for requested post
+    try:
+        # add user maybe TODO
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return post contents
+    if request.method == "GET":
+        post_info = post.serialize()
+        return JsonResponse(post_info)
+
+    # Post must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
