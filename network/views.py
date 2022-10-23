@@ -17,9 +17,11 @@ def index(request):
     # Get all the posts in of the db sort them by date (- is descending)
     posts = Post.objects.all().order_by("-date")
 
-    p = Paginator(posts, 2)
+    # Make the paginator class, set to 3 posts per site
+    p = Paginator(posts, 3)
+    page_number = request.GET.get("page")
+    posts = p.get_page(page_number)
 
-    print(p.num_pages)
 
     return render(request, "network/index.html", {
         "posts" : posts, 

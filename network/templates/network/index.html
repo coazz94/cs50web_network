@@ -42,7 +42,29 @@
             </div>
           </div>
     {% endfor %}
-
+    <div class="pagination mb-2 ml-2">
+      <span class="step-links">
+          {% if posts.has_previous %}
+            <button class="btn btn-link">
+              <a href="?page=1">&laquo; first</a>
+            </button>
+            <button class="btn btn-link">
+              <a href="?page={{ posts.previous_page_number }}">previous</a>
+            </button>
+          {% endif %}
+            <span class="current border">
+                Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+            </span>
+          {% if posts.has_next %}
+            <button class="btn btn-link">
+              <a href="?page={{ posts.next_page_number }}">next</a>
+            </button>
+            <button class="btn btn-link">
+              <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+            </button>
+          {% endif %}
+      </span>
+  </div>
 
 
 
