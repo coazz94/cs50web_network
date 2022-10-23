@@ -26,3 +26,19 @@ class Post(models.Model):
 
     def __str__(self):
         return f"User: {self.creator} created a Post on {self.date}"
+
+
+class Follower(models.Model):
+    """Display who is followign whom
+        - Follower :
+        - Followed
+    """
+    id = models.AutoField(primary_key=True)
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="follower")
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followed")
+
+    def __str__(self):
+        return f"User: {self.follower} follows User: {self.followed}"
+    
+    def is_valid_follower(self):
+        return self.follower != self.followed
