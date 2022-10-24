@@ -15,8 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function edit_post(post_id){
 
+    console.log(post_id)
+
     // Disable the input field
     document.querySelector("#post_input").style.display = "none";
+    // Disable the other edit buttons for the other Fields
+    document.querySelectorAll("#edit").forEach(x => x.style.display = "none");
     // Disable the post view
     document.querySelector(`#view_${post_id}`).style.display = "none";
     // enable the edit view for the searched post
@@ -40,20 +44,15 @@ function edit_post(post_id){
         button_save.innerHTML = "Save"
         // add a EventListener to the button and call the function save_post when clicked on it
         button_save.addEventListener("click", function (){
-        save_post(post_id)
-
+            save_post(post_id)
         })
 
-
+        // add the button and the form to the modul
         document.querySelector(`#edit_view_${post_id}`).append(edit_form, button_save)
 
+        // add the previous post content to the textarea
         document.querySelector("#content").value = post.content;
     });
-
-
-
-
-
 
 
 }
@@ -63,17 +62,33 @@ function save_post(post_id){
 
 
     // Get the content of the changed post
-    const post_content = document.querySelector("#content").value
+    const post_content = document.querySelector("#content").value;
 
- 
+    // Fetch put
+    fetch(`/posts/${post_id}`, {
+        method:"PUT", 
+        body: JSON.stringify({
+            // what to change
+            "content" : post_content
+        })
+    });
 
-    console.log(post_content)
+
+    // Enable the input field
+    document.querySelector("#post_input").style.display = "block";
+    // Enable the other edit buttons for the other Fields
+    document.querySelectorAll("#edit").forEach(x => x.style.display = "block");
+    // Enable the post view
+    document.querySelector(`#view_${post_id}`).style.display = "block";
+    // Add the post content to the view without reloading
+    document.querySelector(`#post_${post_id}`).innerHTML = `<p>${post_content}</p>`;
+    // Disable the edit view for the searched post
+    document.querySelector(`#edit_view_${post_id}`).style.display = "none"
+    console.log(post_content, "DONE")
 
 }
 
 
 
-// Es dürfen keine anderen Posts editieret werden die noch auf der Siete sind
-// Disable die buttons, oder disable die anderen Posts
 // Es darf nur der Post von dem User editiet werden (vorne in python glaube ich )
 

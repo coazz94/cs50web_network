@@ -1,3 +1,4 @@
+import json
 from asyncio.streams import FlowControlMixin
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -7,6 +8,8 @@ from django.urls import reverse
 from requests import request
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from .models import *
 
@@ -182,7 +185,8 @@ def change_follow(request, user_searched_id):
     # return to the user Page again
     return HttpResponseRedirect(reverse("user_page", kwargs={"user_id" : user_searched_id}))
 
-
+@csrf_exempt
+@login_required
 def posts(request, post_id):
 
     # Query for requested post
@@ -196,6 +200,17 @@ def posts(request, post_id):
     if request.method == "GET":
         post_info = post.serialize()
         return JsonResponse(post_info)
+
+    # Update whether email is read or should be archived
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        print(data["content"])
+        if data.get("content") is not None:
+            post.content = data["content"]
+        #if data.get("archived") is not None:
+        #    post.archived = data["archived"]
+        post.save()
+        return HttpResponse(status=204)
 
     # Post must be via GET or PUT
     else:
