@@ -24,12 +24,12 @@
     {% for post in posts %}
         <div class="modal-dialog" role="document" >
             <div class="modal-content rounded-5 shadow" >
-
               <div id="view_{{ post.id }}">
                 <div class="modal-header border-bottom-0">
                   <div>
                     <a href="{% url 'user_page' post.creator.id %}">
-                      <h4 class="modal-title fs-5">{{ post.creator }}</h1>
+                      <h4 class="modal-title fs-5">{{ post.creator }}</h4>
+
                     </a>
                   </div>
                 </div>
@@ -38,18 +38,14 @@
                 </div>
                 <div class="modal-footer" id="buttons_post_{{ post.id }}">
                   <p id="date_modal">{{ post.date }}</p>
-                  <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
-                  <button type="button" class="btn btn btn-dark">Comment</button>
+                    {% if post.creator == user %}
+                      <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
+                    {% endif %}
+                    <button type="button" class="btn btn btn-dark">Comment</button>
                 </div>
               </div>
-
               <div class="edit_view" id="edit_view_{{ post.id }}">
-
               </div>
-
-
-
-
             </div>
           </div>
     {% endfor %}

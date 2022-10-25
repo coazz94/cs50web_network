@@ -15,16 +15,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function edit_post(post_id){
 
-    console.log(post_id)
+    console.log("HERE", post_id)
+
 
     // Disable the input field
-    document.querySelector("#post_input").style.display = "none";
-    // Disable the other edit buttons for the other Fields
-    document.querySelectorAll("#edit").forEach(x => x.style.display = "none");
+    //document.querySelector("#post_input").style.display = "none";
+
     // Disable the post view
     document.querySelector(`#view_${post_id}`).style.display = "none";
     // enable the edit view for the searched post
     document.querySelector(`#edit_view_${post_id}`).style.display = "block"
+
 
 
     // Get the content of the post
@@ -74,16 +75,18 @@ function save_post(post_id){
     });
 
 
+
     // Enable the input field
     document.querySelector("#post_input").style.display = "block";
-    // Enable the other edit buttons for the other Fields
-    document.querySelectorAll("#edit").forEach(x => x.style.display = "block");
     // Enable the post view
     document.querySelector(`#view_${post_id}`).style.display = "block";
     // Add the post content to the view without reloading
-    document.querySelector(`#post_${post_id}`).innerHTML = `<p>${post_content}</p>`;
+    document.querySelector(`#post_${post_id}`).innerHTML = `<p>${post_content}</p>`;    
     // Disable the edit view for the searched post
     document.querySelector(`#edit_view_${post_id}`).style.display = "none"
+    // Set the inner HTML of the edit view to blank
+    document.querySelector(`#edit_view_${post_id}`).innerHTML= ""
+
     console.log(post_content, "DONE")
 
 }
