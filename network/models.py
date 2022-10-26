@@ -51,3 +51,15 @@ class Follower(models.Model):
     
     def is_valid_follower(self):
         return self.follower != self.followed
+
+
+class Liked(models.Model):
+    """Save who liked whose Post
+    """
+
+    id = models.AutoField(primary_key=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post")
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name="liker")
+    
+    def __str__(self):
+        return f"${self.post} was liked by ${self.user}"

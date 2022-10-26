@@ -1,5 +1,6 @@
 import json
 from asyncio.streams import FlowControlMixin
+from tkinter.messagebox import NO
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -28,7 +29,8 @@ def index(request):
 
     return render(request, "network/index.html", {
         "posts" : posts, 
-        "user_id" : request.user.id
+        "user_id" : request.user.id, 
+
     })
 
 
@@ -189,6 +191,9 @@ def change_follow(request, user_searched_id):
 @login_required
 def posts(request, post_id):
 
+
+    print(request)
+
     # Query for requested post
     try:
         # add user maybe TODO
@@ -201,14 +206,13 @@ def posts(request, post_id):
         post_info = post.serialize()
         return JsonResponse(post_info)
 
-    # Update whether email is read or should be archived
+    # Update the post content
     elif request.method == "PUT":
         data = json.loads(request.body)
-        print(data["content"])
         if data.get("content") is not None:
             post.content = data["content"]
-        #if data.get("archived") is not None:
-        #    post.archived = data["archived"]
+        elif data.get("likes") is not None:
+            post.likes = data["likes"] + post.likes
         post.save()
         return HttpResponse(status=204)
 
@@ -217,4 +221,3 @@ def posts(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
-

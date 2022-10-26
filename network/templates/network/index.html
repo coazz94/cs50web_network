@@ -41,7 +41,11 @@
                     {% if post.creator == user %}
                       <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
                     {% endif %}
-                    <button type="button" class="btn btn btn-dark">Comment</button>
+                    {}
+                    <div class="lbutton_pos">
+                      <!--button data-lpost="{{post.id}}" data-liked="0" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-up" ><i class="icon-play"></i></button--> 
+                    </div>
+                    <p id="likes_{{ post.id }}">{{ post.likes }}</p>
                 </div>
               </div>
               <div class="edit_view" id="edit_view_{{ post.id }}">
