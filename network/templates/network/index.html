@@ -41,10 +41,20 @@
                     {% if post.creator == user %}
                       <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
                     {% endif %}
-                    {}
-                    <div class="lbutton_pos">
-                      <!--button data-lpost="{{post.id}}" data-liked="0" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-up" ><i class="icon-play"></i></button--> 
+
+
+
+                    <div class="lbutton_pos_{{ post.id }}">
+                    {% if post.id in liked_posts %}
+                      <button data-lpost="{{ post.id }}" data-liked="0" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-down" ></button> 
+                    {% else %}
+                      <button data-lpost="{{ post.id }}" data-liked="1" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-up" ></button> 
+                    {% endif %}
                     </div>
+
+
+
+
                     <p id="likes_{{ post.id }}">{{ post.likes }}</p>
                 </div>
               </div>

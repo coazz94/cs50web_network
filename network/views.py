@@ -20,6 +20,15 @@ def index(request):
 
     # Get all the posts in of the db sort them by date (- is descending)
     posts = Post.objects.all().order_by("-date")
+    
+    # Filter for the posts liked by this user
+    likes = Liked.objects.filter(user=request.user.id)
+    liked_posts = []
+
+    # Add the post ids in a list
+    for like in likes:
+        liked_posts.append(like.post.id)
+
 
     # Make the paginator class, set to 3 posts per site
     p = Paginator(posts, 3)
@@ -30,6 +39,7 @@ def index(request):
     return render(request, "network/index.html", {
         "posts" : posts, 
         "user_id" : request.user.id, 
+        "liked_posts" : liked_posts,
 
     })
 
@@ -191,9 +201,6 @@ def change_follow(request, user_searched_id):
 @login_required
 def posts(request, post_id):
 
-
-    print(request)
-
     # Query for requested post
     try:
         # add user maybe TODO
@@ -214,6 +221,31 @@ def posts(request, post_id):
         elif data.get("likes") is not None:
             post.likes = data["likes"] + post.likes
         post.save()
+        return HttpResponse(status=204)
+
+    # Post must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+@csrf_exempt
+@login_required
+def like_funct(request, post_id):
+
+    # Update the post content
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        if data.get("like") is not None:
+            # if dislike delete the like object
+            if data["like"] == 0:
+                disliked = Liked.objects.filter(user=request.user.id, post=post_id)
+                disliked.delete()
+            # else add to the Liked instance a new one with the like of the current post
+            else:
+                liked = Liked(user=User.objects.get(id=request.user.id), post=Post.objects.get(id=post_id))  
+                liked.save()
+
         return HttpResponse(status=204)
 
     # Post must be via GET or PUT

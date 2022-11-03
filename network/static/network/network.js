@@ -89,6 +89,54 @@ function save_post(post_id){
 
 async function like_post(post_id, liked){
 
+
+    // 1 = Like , 0 = Dislike
+    // Add the like to the post
+    await fetch(`/posts/${post_id}`, {
+        method:"PUT", 
+        body: JSON.stringify({
+            // what to change
+            "likes" : liked=="0" ? -1 : 1
+        })
+    });
+
+    // get actual likes
+    fetch(`posts/${post_id}`)
+    .then(response => response.json())
+    .then(post => {
+        document.querySelector(`#likes_${post_id}`).innerHTML = post.likes;
+    });
+
+    // change the like status in the db
+    fetch(`/like/${post_id}`, {
+        method:"PUT", 
+        body: JSON.stringify({
+            // what to change
+            "like" : liked=="0" ? 0 : 1
+        })
+    });
+
+
+    // add a new button to the position of the current button (delete the old one)
+    document.querySelector(`.lbutton_pos_${post_id}`).innerHTML = `
+    <button data-lpost=${post_id} data-liked=${!liked} type="button" id="like"></button> `
+    
+    // get the button 
+    let button = document.querySelector(`[data-lpost="${post_id}"]`)
+
+    // add the class depending on the state of the previous button, and add a eventlistener for the next click
+    button.className = liked == "0" ? "ml-2 bi i bi-hand-thumbs-up":"ml-2 bi i bi-hand-thumbs-down"
+    button.addEventListener("click", function(){
+        like_post(post_id, !liked)
+    })
+
+}
+
+
+
+
+async function old_like_post(post_id, liked){
+
     // Add the like to the post
     await fetch(`/posts/${post_id}`, {
         method:"PUT", 

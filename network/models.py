@@ -25,7 +25,7 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"User: {self.creator} created a Post on {self.date}"
+        return f"User: {self.creator} created a Post on {self.content}"
 
     # make the serialize function to acess the items values in python 
     def serialize(self):

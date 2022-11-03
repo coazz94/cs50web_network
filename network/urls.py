@@ -17,10 +17,6 @@ urlpatterns = [
 
     # API Routes
     path("posts/<int:post_id>", views.posts, name="posts"),
+    path("like/<int:post_id>", views.like_funct, name="like_funct"),
 
-    # get the edit from user page
-    # path("user_page/posts/<int:post_id>", views.posts, name="redirect_post"),
-
-
-    # path(r'user_page/posts/<int:post_id>', RedirectView.as_view(pattern_name='posts', permanent=False)),
     ]
