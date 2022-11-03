@@ -14,7 +14,6 @@ from django.contrib.auth.decorators import login_required
 
 from .models import *
 
-# https://cs50.harvard.edu/web/2020/projects/4/network/
 
 def index(request):
 
@@ -99,7 +98,7 @@ def register(request):
 
 def post(request):
 
-    # get the content from the textarea with the name post    
+    # Get the content from the textarea with the name post    
     content = request.POST.get("post")
 
     # Create the user instance
@@ -178,7 +177,7 @@ def user_page(request, user_id):
 
 def change_follow(request, user_searched_id):
 
-    # get the 
+    # get the user on which page we are
     user_searched = User.objects.get(id=user_searched_id)
 
     # Get the info what button was clicked follow or unfollow
@@ -203,7 +202,6 @@ def posts(request, post_id):
 
     # Query for requested post
     try:
-        # add user maybe TODO
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
@@ -229,27 +227,28 @@ def posts(request, post_id):
             "error": "GET or PUT request required."
         }, status=400)
 
+
 @csrf_exempt
 @login_required
 def like_funct(request, post_id):
 
     # Update the post content
-    if request.method == "PUT":
+    if request.method == "POST":
         data = json.loads(request.body)
         if data.get("like") is not None:
-            # if dislike delete the like object
+            # if dislike delete the liked object
             if data["like"] == 0:
                 disliked = Liked.objects.filter(user=request.user.id, post=post_id)
                 disliked.delete()
-            # else add to the Liked instance a new one with the like of the current post
+            # else add to the Liked model a new one with the like of the current post
             else:
                 liked = Liked(user=User.objects.get(id=request.user.id), post=Post.objects.get(id=post_id))  
                 liked.save()
 
         return HttpResponse(status=204)
 
-    # Post must be via GET or PUT
+    # Like must be via PUT
     else:
         return JsonResponse({
-            "error": "GET or PUT request required."
+            "error": "PUT request required."
         }, status=400)

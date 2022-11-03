@@ -1,7 +1,9 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+
   <h3>Followed Users Posts</h3>
+  
     {% for post in posts %}
     <div class="modal-dialog" role="document">
         <div class="modal-content rounded-5 shadow">
@@ -23,4 +25,5 @@
         </div>
       </div>
     {% endfor %}
+
 {% endblock %}

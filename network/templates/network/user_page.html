@@ -1,6 +1,7 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+
     <section id="content" class="container">
     <div class="page-heading">
         <div class="media">
@@ -12,6 +13,7 @@
                 <h4>Follower: {{ followed }}</h4>
                 <h4>Following: {{ following }}</h4>
             </div>
+
             {% if user_searched.id != user.id %}
               <form action="{% url 'change_follow' user_searched.id %}" method="post">
                 {% csrf_token %}
@@ -22,11 +24,13 @@
                 {% endif %}
               </form>
             {% endif %}
+
           </div>                      
           <div class="media-body va-m">
             <h2 class="media-heading">{{ user_searched.username }}</h2>
             <p class="lead">Lorem ipsum dolor sit amet ctetur adicing elit, sed do eiusmod tempor incididunt</p>
             <div class="media-links">
+
                 {% for post in posts %}
                 <div class="modal-dialog" role="document" >
                   <div class="modal-content rounded-5 shadow" >
@@ -35,7 +39,6 @@
                         <div>
                           <a href="{% url 'user_page' post.creator.id %}">
                             <h4 class="modal-title fs-5">{{ post.creator }}</h4>
-      
                           </a>
                         </div>
                       </div>
@@ -54,6 +57,7 @@
                   </div>
                 </div>
                 {% endfor %}
+                
             </div>
           </div>
         </div>

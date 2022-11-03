@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
             edit_post(this.dataset.post);}
         })
 
+    // Find all the like buttons on the Page and add the function that is triggered by the click event
     document.querySelectorAll("#like").forEach(button =>  {
         button.onclick = function () {
             like_post(this.dataset.lpost, this.dataset.liked)
@@ -18,19 +19,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+const domain = window.location.origin   
 
 function edit_post(post_id){
-
-    // Disable the input field
-    //document.querySelector("#post_input").style.display = "none";
 
     // Disable the post view
     document.querySelector(`#view_${post_id}`).style.display = "none";
     // enable the edit view for the searched post
     document.querySelector(`#edit_view_${post_id}`).style.display = "block"
 
-    // Get the content of the post
-    fetch(`posts/${post_id}`)
+    var url = domain + `/posts/${post_id}`
+
+    //fetch(domain + `/posts/${post_id}`)
+    fetch(url)
     .then(response => response.json())
     .then(post => {
 
@@ -44,6 +45,7 @@ function edit_post(post_id){
         const button_save = document.createElement("button")
         button_save.className = "btn btn-info"
         button_save.innerHTML = "Save"
+
         // add a EventListener to the button and call the function save_post when clicked on it
         button_save.addEventListener("click", function (){
             save_post(post_id)
@@ -62,8 +64,10 @@ function save_post(post_id){
     // Get the content of the changed post
     const post_content = document.querySelector("#content").value;
 
+    var url = domain + `/posts/${post_id}`
+
     // Fetch put
-    fetch(`/posts/${post_id}`, {
+    fetch(url, {
         method:"PUT", 
         body: JSON.stringify({
             // what to change
@@ -71,8 +75,6 @@ function save_post(post_id){
         })
     });
 
-    // Enable the input field
-    // document.querySelector("#post_input").style.display = "block";
     // Enable the post view
     document.querySelector(`#view_${post_id}`).style.display = "block";
     // Add the post content to the view without reloading
@@ -82,17 +84,17 @@ function save_post(post_id){
     // Set the inner HTML of the edit view to blank
     document.querySelector(`#edit_view_${post_id}`).innerHTML= ""
 
-    console.log(post_content, "DONE")
-
 }
 
 
 async function like_post(post_id, liked){
 
+    var url = domain + `/posts/${post_id}`
+    var url_l = domain + `/like/${post_id}`
 
     // 1 = Like , 0 = Dislike
     // Add the like to the post
-    await fetch(`/posts/${post_id}`, {
+    await fetch(url, {
         method:"PUT", 
         body: JSON.stringify({
             // what to change
@@ -101,15 +103,15 @@ async function like_post(post_id, liked){
     });
 
     // get actual likes
-    fetch(`posts/${post_id}`)
+    fetch(url)
     .then(response => response.json())
     .then(post => {
         document.querySelector(`#likes_${post_id}`).innerHTML = post.likes;
     });
 
     // change the like status in the db
-    fetch(`/like/${post_id}`, {
-        method:"PUT", 
+    fetch(url_l, {
+        method:"POST", 
         body: JSON.stringify({
             // what to change
             "like" : liked=="0" ? 0 : 1
@@ -131,41 +133,3 @@ async function like_post(post_id, liked){
     })
 
 }
-
-
-
-
-async function old_like_post(post_id, liked){
-
-    // Add the like to the post
-    await fetch(`/posts/${post_id}`, {
-        method:"PUT", 
-        body: JSON.stringify({
-            // what to change
-            "likes" : liked=="0" ? 1 : -1
-        })
-    });
-
-    // get actual likes
-    fetch(`posts/${post_id}`)
-    .then(response => response.json())
-    .then(post => {
-        document.querySelector(`#likes_${post_id}`).innerHTML = post.likes;
-    });
-
-    // Find the button clicked by the post id in the dataset lpost
-    const button_l = document.querySelector(`[data-lpost="${post_id}"]`)
-
-    // Dependingon the liked-state show other button 
-    button_l.className = liked == "0" ? "ml-2 bi i bi-hand-thumbs-down":"ml-2 bi i bi-hand-thumbs-up"
-    button_l.dataset.liked = liked == "0" ? "1":"0"
-
-    document.querySelector(`#like_buttons_${post_id}`).dataset.liked = liked == "0" ? "1":"0";
-    //document.querySelector(`#like_buttons_${post_id}`).append(button_l);
-
-}
-
-
-
-// <button data-post="{{post.id}}" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-up" ><i class="icon-play"></i></button> 
-// <button data-post="{{post.id}}" data-liked="0" type="button" id="dislike" class="ml-2 bi i bi-hand-thumbs-down" ><i class="icon-play"></i></button> 
