@@ -1,3 +1,4 @@
+// Declare constant DOMAIN for the whole script
 const DOMAIN = window.location.origin   
 
 document.addEventListener("DOMContentLoaded", function () {

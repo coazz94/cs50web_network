@@ -38,8 +38,8 @@ class Post(models.Model):
 
 class Follower(models.Model):
     """Display who is followign whom
-        - Follower :
-        - Followed
+        - Follower : User Instance
+        - Followed : User Instance
     """
     id = models.AutoField(primary_key=True)
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="follower")
@@ -54,6 +54,8 @@ class Follower(models.Model):
 
 class Liked(models.Model):
     """Save who liked whose Post
+        - Which Post: Post Instance
+        - Whic User: User Instance
     """
 
     id = models.AutoField(primary_key=True)
