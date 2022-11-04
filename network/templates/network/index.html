@@ -22,40 +22,7 @@
     {% endif %}
 
     {% for post in posts %}
-        <div class="modal-dialog" role="document" >
-            <div class="modal-content rounded-5 shadow" >
-              <div id="view_{{ post.id }}">
-                <div class="modal-header border-bottom-0">
-                  <div>
-                    <a href="{% url 'user_page' post.creator.id %}">
-                      <h4 class="modal-title fs-5">{{ post.creator }}</h4>
-                    </a>
-                  </div>
-                </div>
-                <div class="modal-body py-0" id="post_{{ post.id }}">
-                  <p>{{ post.content }}</p>
-                </div>
-                <div class="modal-footer" id="buttons_post_{{ post.id }}">
-                  <p id="date_modal">{{ post.date }}</p>
-
-                    {% if post.creator == user %}
-                      <button data-post="{{post.id}}" type="button" id="edit" class="btn btn btn-primary" >Edit</button> 
-                    {% endif %}
-
-                    <div class="lbutton_pos_{{ post.id }}">
-                      {% if post.id in liked_posts %}
-                        <button data-lpost="{{ post.id }}" data-liked="0" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-down" ></button> 
-                      {% else %}
-                        <button data-lpost="{{ post.id }}" data-liked="1" type="button" id="like" class="ml-2 bi i bi-hand-thumbs-up" ></button> 
-                      {% endif %}
-                    </div>
-                    <p id="likes_{{ post.id }}">{{ post.likes }}</p>
-                </div>
-              </div>
-              <div class="edit_view" id="edit_view_{{ post.id }}">
-              </div>
-            </div>
-          </div>
+      {% include "network/posts.html" %}
     {% endfor %}
 
     <div class="pagination mb-2 ml-2">
