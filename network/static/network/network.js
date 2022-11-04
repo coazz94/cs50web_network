@@ -1,3 +1,5 @@
+const DOMAIN = window.location.origin   
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Set all the edit views at none
@@ -19,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-const domain = window.location.origin   
 
 function edit_post(post_id){
 
@@ -28,9 +29,9 @@ function edit_post(post_id){
     // enable the edit view for the searched post
     document.querySelector(`#edit_view_${post_id}`).style.display = "block"
 
-    var url = domain + `/posts/${post_id}`
+    var url = DOMAIN + `/posts/${post_id}`
 
-    //fetch(domain + `/posts/${post_id}`)
+    //fetch(DOMAIN + `/posts/${post_id}`)
     fetch(url)
     .then(response => response.json())
     .then(post => {
@@ -64,7 +65,7 @@ function save_post(post_id){
     // Get the content of the changed post
     const post_content = document.querySelector("#content").value;
 
-    var url = domain + `/posts/${post_id}`
+    var url = DOMAIN + `/posts/${post_id}`
 
     // Fetch put
     fetch(url, {
@@ -89,8 +90,8 @@ function save_post(post_id){
 
 async function like_post(post_id, liked){
 
-    var url = domain + `/posts/${post_id}`
-    var url_l = domain + `/like/${post_id}`
+    var url = DOMAIN + `/posts/${post_id}`
+    var url_l = DOMAIN + `/like/${post_id}`
 
     // 1 = Like , 0 = Dislike
     // Add the like to the post
